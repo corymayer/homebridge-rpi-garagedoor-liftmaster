@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "onoff": "registry:dt/onoff#0.0.0+20160620211513"
+  }
+}
