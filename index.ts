@@ -14,11 +14,10 @@ import * as RPIO from 'rpio';
 type HBLogFunc = (msg: String) => void;
 
 /**
- * Interface for a Homebridge Plugin, minus the constructor because
- * TypeScript is weird and doesn't let you do that. Constructor signature:
- * constructor(api: HomebridgeAPI): void
+ * Base class that represents a plugin for Homebridge.
  * 
- * @interface HomebridgePlugin
+ * @abstract
+ * @class HomebridgePlugin
  */
 abstract class HomebridgePlugin {
     public static api: any; // the homebridge api object reference
