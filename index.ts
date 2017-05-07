@@ -50,7 +50,7 @@ interface RPGConfig {
 /**
  * Entry point for the plugin.
  */
-export default (api: HomebridgeAPI) => {
+module.exports = (api: HomebridgeAPI) => {
     new GarageDoorAccessory(api);
 }
 
