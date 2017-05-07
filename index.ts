@@ -38,13 +38,13 @@ interface HomebridgeAPI {
 /**
  * Config json structure for my plugin.
  * 
- * @interface RPGConfig
+ * @class RPGConfig
  */
-interface RPGConfig {
+class RPGConfig {
     name: String;
     doorPin: number;
     timeToOpen: number;
-    buttonHoldTime: number,
+    buttonHoldTime: number;
 }
 
 /**
@@ -104,6 +104,7 @@ class GarageDoorAccessory implements HomebridgePlugin {
         this.log = log;
 
         // parse config json
+        this.config = new RPGConfig();
         this.config.name = config['name'];
         this.config.doorPin = config['doorPin'] || this.DEFAULT_DOOR_PIN;
         this.config.timeToOpen = config['timeToOpen'] || this.DEFAULT_TIME_OPEN;
