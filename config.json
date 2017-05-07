@@ -1,0 +1,18 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "AA:AA:AA:AA:AA:AA",
+        "port": 8675309,
+        "pin": "123-45-678"
+    },
+    "description": "Example config file.",
+    "platforms": [],
+    "accessories": [{
+        "accessory": "RPIGarageDoor",
+        "name": "Garage Door",
+        "doorSwitchPin": 12,
+        "simulateTimeOpening": 15,
+        "simulateTimeOpen": 30,
+        "simulateTimeClosing": 15
+    }]
+}

@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "onoff": "registry:dt/onoff#0.0.0+20160620211513"
+  },
+  "globalDependencies": {
+    "rpio": "registry:dt/rpio#0.0.0+20160921181726"
   }
 }

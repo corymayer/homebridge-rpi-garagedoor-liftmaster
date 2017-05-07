@@ -2,8 +2,9 @@
   "name": "homebridge-rpi-garagedoor",
   "version": "0.1.0",
   "description": "Simple Raspberry Pi Garage Door Opener/Closer Plugin for Homebridge",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "prepublish": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -30,6 +31,8 @@
     "typescript": "^2.3.2"
   },
   "dependencies": {
-    "onoff": "^1.1.2"
+    "homebridge": "^0.4.20",
+    "onoff": "^1.1.2",
+    "rpio": "^0.9.16"
   }
 }
