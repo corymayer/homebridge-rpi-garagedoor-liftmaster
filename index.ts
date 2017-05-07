@@ -32,7 +32,7 @@ interface HomebridgePlugin {
 interface HomebridgeAPI {
     hap: any;
     registerAccessory(packageName: String, pluginName: String, 
-        constructor: (log: HBLogFunc, config: RPGConfig) => void): void;
+        constructor: (log: HBLogFunc, config: any[]) => void): void;
 }
 
 /**
@@ -100,14 +100,14 @@ class GarageDoorAccessory implements HomebridgePlugin {
      * 
      * @memberof GarageDoorAccessory
      */
-    initialize(log: HBLogFunc, config: RPGConfig) {
+    initialize(log: HBLogFunc, config: any[]) {
         this.log = log;
 
         // parse config json
-        this.config.name = config.name;
-        this.config.doorPin = config.doorPin || this.DEFAULT_DOOR_PIN;
-        this.config.timeToOpen = config.timeToOpen || this.DEFAULT_TIME_OPEN;
-        this.config.buttonHoldTime = config.buttonHoldTime || this.DEFAULT_BTN_HOLD_TIME;
+        this.config.name = config['name'];
+        this.config.doorPin = config['doorPin'] || this.DEFAULT_DOOR_PIN;
+        this.config.timeToOpen = config['timeToOpen'] || this.DEFAULT_TIME_OPEN;
+        this.config.buttonHoldTime = config['buttonHoldTime'] || this.DEFAULT_BTN_HOLD_TIME;
         log("initialized with pin [" + this.config.doorPin + "], tOpen ["
             + this.config.timeToOpen + "] buttonTime [" 
             + this.config.buttonHoldTime + "]");
