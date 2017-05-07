@@ -10,9 +10,8 @@
     "accessories": [{
         "accessory": "RPIGarageDoor",
         "name": "Garage Door",
-        "doorSwitchPin": 12,
-        "simulateTimeOpening": 15,
-        "simulateTimeOpen": 30,
-        "simulateTimeClosing": 15
+        "doorPin": 12,
+        "timeToOpen": 10,
+        "buttonHoldTime": 1
     }]
 }

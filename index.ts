@@ -47,7 +47,22 @@ interface RPGConfig {
     buttonHoldTime: number,
 }
 
-export default class GarageDoorAccessory implements HomebridgePlugin {
+/**
+ * Entry point for the plugin.
+ */
+export default (api: HomebridgeAPI) => {
+    new GarageDoorAccessory(api);
+}
+
+/**
+ * Class that represents a Homebridge accessory for controlling
+ * a simple garage door opener. Handles all states of a typical
+ * garage door opener.
+ * 
+ * @class GarageDoorAccessory
+ * @implements {HomebridgePlugin}
+ */
+class GarageDoorAccessory implements HomebridgePlugin {
     readonly PKG_NAME: String = 'homebridge-rpi-garagedoor';
     readonly NAME: String = 'RPIGarageDoor';
     readonly MANUFACTURER: String = 'Homebridge';
@@ -66,14 +81,14 @@ export default class GarageDoorAccessory implements HomebridgePlugin {
     private services: any[]; // the services associated with this plugin
 
     /**
-     * Creates an instance of GarageDoorAccessory. Main entry point for plugin.
+     * Creates an instance of GarageDoorAccessory and registers the plugin.
      * @param {HomebridgeAPI} homebridge the homebridge api object passed into
      * the plugin
      * 
      * @memberof GarageDoorAccessory
      */
-    constructor(homebridge: HomebridgeAPI) {
-        this.api = homebridge;
+    constructor(api: HomebridgeAPI) {
+        this.api = api;
 
         this.api.registerAccessory(this.PKG_NAME, this.NAME, this.initialize);
     }
