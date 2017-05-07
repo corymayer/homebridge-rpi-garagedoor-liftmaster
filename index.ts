@@ -20,19 +20,14 @@ type HBLogFunc = (msg: String) => void;
  * 
  * @interface HomebridgePlugin
  */
-interface HomebridgePlugin {
-    getServices(): any[];
-}
+abstract class HomebridgePlugin {
+    public static api: any; // the homebridge api object reference
 
-/**
- * Interface for the homebridge API, defined to make Typescript happy.
- * 
- * @interface HomebridgeAPI
- */
-interface HomebridgeAPI {
-    hap: any;
-    registerAccessory(packageName: String, pluginName: String, 
-        constructor: (log: HBLogFunc, config: any[]) => void): void;
+    constructor(log: HBLogFunc, config: any[]) {
+        // IMPLEMENTME
+    }
+
+    abstract getServices(): any[];
 }
 
 /**
@@ -50,8 +45,10 @@ class RPGConfig {
 /**
  * Entry point for the plugin.
  */
-module.exports = (api: HomebridgeAPI) => {
-    new GarageDoorAccessory(api);
+module.exports = (api: any) => {
+    HomebridgePlugin.api = api;
+
+    api.registerAccessory('homebridge-rpi-garagedoor', 'RPIGarageDoor', GarageDoorAccessory);
 }
 
 /**
@@ -62,9 +59,7 @@ module.exports = (api: HomebridgeAPI) => {
  * @class GarageDoorAccessory
  * @implements {HomebridgePlugin}
  */
-class GarageDoorAccessory implements HomebridgePlugin {
-    readonly PKG_NAME: String = 'homebridge-rpi-garagedoor';
-    readonly NAME: String = 'RPIGarageDoor';
+class GarageDoorAccessory extends HomebridgePlugin {
     readonly MANUFACTURER: String = 'Homebridge';
     readonly MODEL: String = 'Garage Opener';
     readonly SERIAL: String = '8675309';
@@ -73,25 +68,11 @@ class GarageDoorAccessory implements HomebridgePlugin {
     readonly DEFAULT_BTN_HOLD_TIME = 0.1;
     readonly MS_IN_S = 1000;
 
-    private api: HomebridgeAPI; // the homebridge api object reference
     private config: RPGConfig; // parsed configuration from config.json
     private log: HBLogFunc; // the wrapped logging function homebridge gives us
     private openerService: any; // the GarageDoorOpener service object
     private timer: NodeJS.Timer; // a timer for waiting on the door to open/close
     private services: any[]; // the services associated with this plugin
-
-    /**
-     * Creates an instance of GarageDoorAccessory and registers the plugin.
-     * @param {HomebridgeAPI} homebridge the homebridge api object passed into
-     * the plugin
-     * 
-     * @memberof GarageDoorAccessory
-     */
-    constructor(api: HomebridgeAPI) {
-        this.api = api;
-
-        this.api.registerAccessory(this.PKG_NAME, this.NAME, this.initialize);
-    }
 
     /**
      * Sets up the plugin and all of its services.
@@ -100,7 +81,8 @@ class GarageDoorAccessory implements HomebridgePlugin {
      * 
      * @memberof GarageDoorAccessory
      */
-    initialize(log: HBLogFunc, config: any[]) {
+    constructor(log: HBLogFunc, config: any[]) {
+        super(log, config);
         this.log = log;
 
         // parse config json
@@ -114,9 +96,10 @@ class GarageDoorAccessory implements HomebridgePlugin {
             + this.config.buttonHoldTime + "]");
 
         // bad way of accessing hap-nodejs API but required by homebridge
-        let Service = this.api.hap.Service;
-        let Characteristic = this.api.hap.Characteristic;
+        let Service = HomebridgePlugin.api.hap.Service;
+        let Characteristic = HomebridgePlugin.api.hap.Characteristic;
         
+        this.services = []
         // create opener service
         this.openerService = new Service.GarageDoorOpener(this.config.name, 
                                                          this.config.name);
@@ -143,8 +126,8 @@ class GarageDoorAccessory implements HomebridgePlugin {
         RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
 
         // more hackish hap-nodejs api access
-        let CurrentDoorState = this.api.hap.Characteristic.CurrentDoorState;
-        let TargetDoorState = this.api.hap.Characteristic.TargetDoorState;
+        let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
+        let TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
 
         // set initial door state
         service.setCharacteristic(CurrentDoorState, CurrentDoorState.CLOSED);
@@ -229,7 +212,7 @@ class GarageDoorAccessory implements HomebridgePlugin {
      * @memberof GarageDoorAccessory
      */
     setState(state: any) {
-        let CurrentDoorState = this.api.hap.Characteristic.CurrentDoorState;
+        let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
 
         this.openerService.setCharacteristic(CurrentDoorState, state);
     }
@@ -241,7 +224,7 @@ class GarageDoorAccessory implements HomebridgePlugin {
      * @memberof GarageDoorAccessory
      */
     getState(): any {
-        let CurrentDoorState = this.api.hap.Characteristic.CurrentDoorState;
+        let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
 
         return this.openerService.getCharacteristic(CurrentDoorState).value;
     }
