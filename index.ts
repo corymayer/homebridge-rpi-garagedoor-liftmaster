@@ -153,6 +153,7 @@ class GarageDoorAccessory extends HomebridgePlugin {
                             // make sure door is still opening
                             if (this.getState() == CurrentDoorState.OPENING) {
                                 this.setState(CurrentDoorState.OPEN);
+                                this.log("Door is OPEN");
                             }
                         }, this.config.timeToOpen * this.MS_IN_S);
                     }
@@ -183,6 +184,7 @@ class GarageDoorAccessory extends HomebridgePlugin {
                             // make sure door is still closing
                             if (this.getState() == CurrentDoorState.CLOSING) {
                                 this.setState(CurrentDoorState.CLOSED);
+                                this.log("Door is CLOSED");
                             }
                         }, this.config.timeToOpen * this.MS_IN_S);
                     }
