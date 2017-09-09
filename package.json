@@ -4,7 +4,7 @@
   "description": "Raspberry Pi Garage Door Opener/Closer Plugin for Homebridge and Liftmaster Garage Doors",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "tsc",
+    "prepare": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,12 +15,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/corymayer/homebridge-rpi-garagedoor"
+    "url": "https://github.com/corymayer/homebridge-rpi-garagedoor-liftmaster"
   },
   "author": "Cory Mayer (https://coryamayer.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/corymayer/homebridge-rpi-garagedoor/issues"
+    "url": "https://github.com/corymayer/homebridge-rpi-garagedoor-liftmaster/issues"
   },
   "engines": {
     "node": ">=7.9.0",
