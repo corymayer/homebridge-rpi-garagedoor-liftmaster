@@ -46,7 +46,7 @@ var RPGConfig = /** @class */ (function () {
  */
 module.exports = function (api) {
     HomebridgePlugin.api = api;
-    api.registerAccessory('homebridge-rpi-garagedoor', 'RPIGarageDoor', GarageDoorAccessory);
+    api.registerAccessory('homebridge-rpi-garagedoor', 'RPILiftMasterGarageDoor', GarageDoorAccessory);
 };
 /**
  * Class that represents a Homebridge accessory for controlling
