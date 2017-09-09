@@ -122,8 +122,10 @@ class GarageDoorAccessory extends HomebridgePlugin {
         let service = this.openerService;
 
         // create the rpio pin for door control, set pulldown resistor
-        RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
-
+        if (process.env.DEBUG != '*') {
+            RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
+        }
+        
         // more hackish hap-nodejs api access
         let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
         let TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
@@ -133,16 +135,25 @@ class GarageDoorAccessory extends HomebridgePlugin {
         service.setCharacteristic(TargetDoorState, TargetDoorState.CLOSED);
 
         // setup service callback for monitoring state
+        service.getCharacteristic(TargetDoorState).on('get', (callback: any) => {
+            let curValue = service.getCharacteristic(TargetDoorState).value;
+
+            this.log("GET TARGET: " + curValue)
+
+            callback(null, curValue);
+        });
+
         service.getCharacteristic(TargetDoorState).on('set', (newValue: any, callback: any) => {
             // first get the current state
             let currentState = service.getCharacteristic(CurrentDoorState).value;
             
-            switch(newValue) {
+            switch (newValue) {
                 // TARGET = OPENED
                 case TargetDoorState.OPEN:
                     this.log("Target is OPENING");
 
-                    if (currentState == CurrentDoorState.CLOSED) {
+                    if (currentState == CurrentDoorState.CLOSED ||
+                        currentState == CurrentDoorState.CLOSING) {
                         // start opening the door
                         this.toggleDoor();
                         this.setState(CurrentDoorState.OPENING);
@@ -161,8 +172,15 @@ class GarageDoorAccessory extends HomebridgePlugin {
                         // don't do anything because it's already open
                         this.log("Door already OPEN");
                     }
+                    else if (currentState == CurrentDoorState.STOPPED) {
+                        // If the door is opening, we stop it, and resume from
+                        // a stop, iOS insists the next direction should be open.
+                        // Since we can't override this, we just have to do a 
+                        // noop here to match the actual door operation.
+                        // Users will have to tap twice to resume.
+                    }
                     else {
-                        // if door is closing or opening then stop the door
+                        // if door is opening then stop the door
                         this.toggleDoor();
                         this.setState(CurrentDoorState.STOPPED);
                         this.log("Door STOPPED");
@@ -173,7 +191,8 @@ class GarageDoorAccessory extends HomebridgePlugin {
                 case TargetDoorState.CLOSED:
                     this.log("Target is CLOSING");
 
-                    if (currentState == CurrentDoorState.OPEN) {
+                    if (currentState == CurrentDoorState.OPEN ||
+                        currentState == CurrentDoorState.STOPPED) {
                         // start closing the door
                         this.toggleDoor();
                         this.setState(CurrentDoorState.CLOSING);
@@ -204,6 +223,13 @@ class GarageDoorAccessory extends HomebridgePlugin {
             // call the callback because the hap-nodejs documentation says so
             callback();
         });
+
+        // setup service to send state back to device
+        service.getCharacteristic(CurrentDoorState).on('get', (callback: any) => {
+            this.log("GET STATE: " + this.getState());
+
+            callback(null, this.getState());
+        });
     }
     
     /**
@@ -216,6 +242,12 @@ class GarageDoorAccessory extends HomebridgePlugin {
         let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
 
         this.openerService.setCharacteristic(CurrentDoorState, state);
+    }
+
+    setTargetState(state: any) {
+        let TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
+
+        this.openerService.setCharacteristic(TargetDoorState, state);
     }
 
     /**
@@ -238,9 +270,15 @@ class GarageDoorAccessory extends HomebridgePlugin {
      * @memberof GarageDoorAccessory
      */
     toggleDoor() {
-        RPIO.write(this.config.doorPin, RPIO.HIGH);
-        RPIO.sleep(this.config.buttonHoldTime);
-        RPIO.write(this.config.doorPin, RPIO.LOW);
+        if (process.env.DEBUG == '*') {
+            this.log("TOGGLE");
+        }
+        else {
+            RPIO.write(this.config.doorPin, RPIO.HIGH);
+            RPIO.sleep(this.config.buttonHoldTime);
+            RPIO.write(this.config.doorPin, RPIO.LOW);
+        }
+        
     }
 
     /**
