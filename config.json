@@ -8,7 +8,7 @@
     "description": "Example config file.",
     "platforms": [],
     "accessories": [{
-        "accessory": "RPIGarageDoor",
+        "accessory": "RPILiftMasterGarageDoor",
         "name": "Garage Door",
         "doorPin": 12,
         "timeToOpen": 10,
