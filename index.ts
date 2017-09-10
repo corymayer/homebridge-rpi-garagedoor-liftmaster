@@ -47,7 +47,7 @@ class RPGConfig {
 module.exports = (api: any) => {
     HomebridgePlugin.api = api;
 
-    api.registerAccessory('homebridge-rpi-garagedoor', 'RPILiftMasterGarageDoor', GarageDoorAccessory);
+    api.registerAccessory('homebridge-rpi-garagedoor-liftmaster', 'RPILiftMasterGarageDoor', GarageDoorAccessory);
 }
 
 /**
@@ -122,9 +122,7 @@ class GarageDoorAccessory extends HomebridgePlugin {
         let service = this.openerService;
 
         // create the rpio pin for door control, set pulldown resistor
-        if (process.env.DEBUG != '*') {
-            RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
-        }
+        RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
         
         // more hackish hap-nodejs api access
         let CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
@@ -244,6 +242,10 @@ class GarageDoorAccessory extends HomebridgePlugin {
         this.openerService.setCharacteristic(CurrentDoorState, state);
     }
 
+    /**
+     * Helper function to set the TargetDoorState.
+     * @param state the TargetDoorState to set on the service
+     */
     setTargetState(state: any) {
         let TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
 
@@ -270,15 +272,9 @@ class GarageDoorAccessory extends HomebridgePlugin {
      * @memberof GarageDoorAccessory
      */
     toggleDoor() {
-        if (process.env.DEBUG == '*') {
-            this.log("TOGGLE");
-        }
-        else {
-            RPIO.write(this.config.doorPin, RPIO.HIGH);
-            RPIO.sleep(this.config.buttonHoldTime);
-            RPIO.write(this.config.doorPin, RPIO.LOW);
-        }
-        
+        RPIO.write(this.config.doorPin, RPIO.HIGH);
+        RPIO.sleep(this.config.buttonHoldTime);
+        RPIO.write(this.config.doorPin, RPIO.LOW);
     }
 
     /**

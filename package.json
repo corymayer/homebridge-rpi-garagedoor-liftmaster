@@ -1,6 +1,6 @@
 {
   "name": "homebridge-rpi-garagedoor-liftmaster",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Raspberry Pi Garage Door Opener/Closer Plugin for Homebridge and Liftmaster Garage Doors",
   "main": "dist/index.js",
   "scripts": {

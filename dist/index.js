@@ -46,7 +46,7 @@ var RPGConfig = /** @class */ (function () {
  */
 module.exports = function (api) {
     HomebridgePlugin.api = api;
-    api.registerAccessory('homebridge-rpi-garagedoor', 'RPILiftMasterGarageDoor', GarageDoorAccessory);
+    api.registerAccessory('homebridge-rpi-garagedoor-liftmaster', 'RPILiftMasterGarageDoor', GarageDoorAccessory);
 };
 /**
  * Class that represents a Homebridge accessory for controlling
@@ -109,9 +109,7 @@ var GarageDoorAccessory = /** @class */ (function (_super) {
         var _this = this;
         var service = this.openerService;
         // create the rpio pin for door control, set pulldown resistor
-        if (process.env.DEBUG != '*') {
-            RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
-        }
+        RPIO.open(this.config.doorPin, RPIO.OUTPUT, RPIO.LOW);
         // more hackish hap-nodejs api access
         var CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
         var TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
@@ -213,6 +211,10 @@ var GarageDoorAccessory = /** @class */ (function (_super) {
         var CurrentDoorState = HomebridgePlugin.api.hap.Characteristic.CurrentDoorState;
         this.openerService.setCharacteristic(CurrentDoorState, state);
     };
+    /**
+     * Helper function to set the TargetDoorState.
+     * @param state the TargetDoorState to set on the service
+     */
     GarageDoorAccessory.prototype.setTargetState = function (state) {
         var TargetDoorState = HomebridgePlugin.api.hap.Characteristic.TargetDoorState;
         this.openerService.setCharacteristic(TargetDoorState, state);
@@ -235,14 +237,9 @@ var GarageDoorAccessory = /** @class */ (function (_super) {
      * @memberof GarageDoorAccessory
      */
     GarageDoorAccessory.prototype.toggleDoor = function () {
-        if (process.env.DEBUG == '*') {
-            this.log("TOGGLE");
-        }
-        else {
-            RPIO.write(this.config.doorPin, RPIO.HIGH);
-            RPIO.sleep(this.config.buttonHoldTime);
-            RPIO.write(this.config.doorPin, RPIO.LOW);
-        }
+        RPIO.write(this.config.doorPin, RPIO.HIGH);
+        RPIO.sleep(this.config.buttonHoldTime);
+        RPIO.write(this.config.doorPin, RPIO.LOW);
     };
     /**
      * Gets all of the services associated with this plugin.
